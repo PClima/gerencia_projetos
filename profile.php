@@ -9,6 +9,7 @@
         $email = $_COOKIE['email'];
         $username = $_COOKIE['usuario'];
         $permissao = $_COOKIE['permissao'];
+        $id = $_COOKIE['id'];
     }
 
     include("../includes/mysql.php");
@@ -23,6 +24,7 @@
         <title>Gerência de Projetos</title>
         <link rel="stylesheet" href="assets/tailcss.css">
         <link rel="stylesheet" href="assets/style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
@@ -31,6 +33,30 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
         <style>@import url('https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.min.css');</style>
+
+        <script>
+            function f_acao(valor){
+                with(document.myform){
+                    acao.value = valor;
+                }
+            }
+
+            function validaForm(theForm){
+                if(theForm.acao.value=='atualiza_user'){
+                    if($('#senha').val() == ""){
+                        alert("Insira a senha para atualização");
+                        return false;
+                    }
+                    if($('#senha').val() != $('#senha1').val()){
+                        alert("As duas senhas devem ser iguais");
+                        return false;
+                    }
+
+                    return true;
+                }
+                
+            }
+        </script>
     </head>
 
     <body class="bg-blue-100">
@@ -140,149 +166,81 @@
                         </header>
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
                 <div class="container mx-auto px-6 py-8">
-                    <h3 class="text-gray-700 text-3xl font-medium">Projetos</h3>
-    
-                    <div class="mt-4">
-                        <div class="flex flex-wrap -mx-6">
-                            <div class="w-full px-6 sm:w-1/2 xl:w-1/3">
-                                <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-white">
-                                <div class="p-3 bg-opacity-75"><span class="material-icons">attach_money</span></div>
-                                    <?php
-                                        $mes = date('m');
-                                        $sql = "SELECT receita FROM projetos WHERE prazo BETWEEN '2021-$mes-01' AND '2021-$mes-31'";
-                                        $query = mysqli_query($conexao, $sql);
-                                        $total = 0;
-                                        while($results = mysqli_fetch_row($query)){
-                                            $total += $results[0];
-                                        }
-                                    ?>
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-green-700">R$ <?php echo $total?></h4>
-                                        <div class="text-gray-500">Ganhos no mês</div>
+                    <h3 class="text-gray-700 text-3xl font-medium">Dados Pessoais</h3>
+                        <form class="form-horizontal w-3/4 mx-auto" method="POST" name="myform" id="myform" onsubmit="return validaForm(this);" action="operador.php">
+                            <?php
+                                $sql = "SELECT * FROM usuarios WHERE id='$id'";
+                                $query = mysqli_query($conexao, $sql);
+                                $results = mysqli_fetch_row($query);
+
+                                $dateFormat = explode('-', $results[6]);
+                            ?>
+                                <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3">
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                Nome
+                                            </label>
+                                            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="name" name="name" type="text" value="<?php echo $results[1];?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3">
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                Email
+                                            </label>
+                                            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="email" name="email" type="text" value="<?php echo $results[2];?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3">
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                Usuario
+                                            </label>
+                                            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="usuario" name="usuario" type="text" value="<?php echo $results[3];?>" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3">
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                Nova Senha
+                                            </label>
+                                            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="senha" name="senha" type="password">
+                                        </div>
+                                    </div>
+
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3">
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                Confirme a nova Senha
+                                            </label>
+                                            <input class="appearance-none block w-full bg-grey-lighter text-grey-darker border border-grey-lighter rounded py-3 px-4 mb-3" id="senha1" name="senha1" type="password">
+                                        </div>
+                                    </div>
+
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <div class="md:w-full px-3">
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                Membro desde
+                                            </label>
+                                            <label class="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" for="grid-password">
+                                                <?php echo $dateFormat[2]."/".$dateFormat[1]."/".$dateFormat[0]?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="-mx-3 md:flex mb-6">
+                                        <input type="submit" value="Atualizar" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('atualiza_user')">
+                                        &nbsp;
+                                        <a href="dashboard.php" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded">
+                                            Voltar
+                                        </a>
                                     </div>
                                 </div>
-                            </div>
-    
-                            <a class="w-full px-6 sm:w-1/2 xl:w-1/3" href="?tipo=total">
-                                <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-white">
-                                <div class="p-3 bg-opacity-75"><span class="material-icons">work</span></div>
-                                    <?php
-                                        $sql = "SELECT * FROM projetos";
-                                        $query = mysqli_query($conexao, $sql);
-                                        $total_proj = mysqli_num_rows($query);
-                                    ?>
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-gray-700"><?php echo $total_proj?></h4>
-                                        <div class="text-gray-500">Total de projetos</div>
-                                    </div>
-                                </div>
-                            </a>
-    
-                            <a class="w-full px-6 sm:w-1/2 xl:w-1/3" href="?tipo=ativos">
-                                <div class="flex items-center px-5 py-6 shadow-sm rounded-md bg-white">
-                                <div class="p-3 bg-opacity-75"><span class="material-icons">toggle_on</span></div>
-                                    <?php
-                                        $mes = date('m');
-                                        $sql = "SELECT * FROM projetos WHERE fim = '0000-00-00' AND prazo BETWEEN '2021-$mes-01' AND '2021-$mes-31'";
-                                        $query = mysqli_query($conexao, $sql);
-                                        $total_ativos = mysqli_num_rows($query);
-                                    ?>
-                                    <div class="mx-5">
-                                        <h4 class="text-2xl font-semibold text-gray-700"><?php echo $total_ativos?></h4>
-                                        <div class="text-gray-500">Projetos Ativos</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-    
-                    <div class="mt-8">
-    
-                    </div>
-    
-                    <div class="flex flex-col mt-8">
-                        <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-                            <div
-                                class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-                                <table class="min-w-full">
-                                    <thead>
-                                        <tr>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Titulo</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Cliente</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Status</th>
-                                            <th
-                                                class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Data</th>
-                                        </tr>
-                                    </thead>
-    
-                                    <tbody class="bg-white">
-                                        <?php
-                                            if(isset($_GET['tipo'])){
-                                                if($_GET['tipo'] == 'ativos'){
-                                                    $sql = "SELECT id, titulo, cliente, fim, prazo FROM projetos WHERE fim = '0000-00-00' LIMIT 20";
-                                                }else{
-                                                    $sql = "SELECT id, titulo, cliente, fim, prazo FROM projetos LIMIT 20";
-                                                }
-                                            }else{
-                                                $sql = "SELECT id, titulo, cliente, fim, inicio FROM projetos LIMIT 20";
-                                            }
-                                            $query = mysqli_query($conexao, $sql);
-
-                                            $cont = 0;
-                                            while($result = mysqli_fetch_row($query)){
-                                                $cont++;
-                                        ?>
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                <?php if($result[3] == '0000-00-00'){?>
-                                                    <a href="form_projeto.php?id=<?php echo $result[0]?>"><div class="text-sm leading-5 text-gray-900"><?php echo $result[1];?></div></a>
-                                                <?php }else{?>
-                                                    <div class="text-sm leading-5 text-gray-900"><?php echo $result[1];?></div>
-                                                <?php }?>
-                                                
-                                            </td>
-                
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                <div class="text-sm leading-5 text-gray-900"><?php echo $result[2];?></div>
-                                            </td>
-                
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                <?php if($result[3] == '0000-00-00'){?>
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Ativo</span>
-                                                <?php }else{?>
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Finalizado</span>
-                                                <?php }?>
-                                            </td>
-
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                <?php $dataFormat = explode('-', $result[4])?>
-                                                <div class="text-sm leading-5 text-gray-900"><?php echo $dataFormat[2]."/".$dataFormat[1]."/".$dataFormat[0];?></div>
-                                            </td>
-                                        </tr>
-                                        <?php }
-
-                                        if($cont ==0){?>
-                                            <tr>
-                                            <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200" colspan="4">
-                                                    <div class="ml-4">
-                                                        <div class="text-sm leading-5 font-medium text-gray-900">Não há projetos cadastrados</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        <?php } ?>
-                                        
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                                <input type="hidden" id="acao" name="acao" value="x">
+                                <input type="hidden" id="id_" name="id_" value="<?php echo $results[0]; ?>">
+                        </form>
+                    <div class="mt-8"></div>
                 </div>
             </main>
         </div>

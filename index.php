@@ -16,6 +16,7 @@
         <title>Document</title>
         <link rel="stylesheet" href="assets/tailcss.css">
         <link rel="stylesheet" href="assets/style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
@@ -25,6 +26,22 @@
                 with(document.myform){
                     acao.value = valor;
                 }
+            }
+
+            function validaForm(theForm){
+                if(theForm.acao.value=='logar'){
+                    if($('#user').val() == ""){
+                        alert("Insira o usuário para login");
+                        return false;
+                    }
+                    if($('#password').val() == ""){
+                        alert("Insira a senha para login");
+                        return false;
+                    } 
+
+                    return true;
+                }
+                
             }
         </script>
 
@@ -39,17 +56,15 @@
                         <div class="flex flex-col flex-1 justify-center mb-8">
                             <h1 class="text-4xl text-center font-thin">Bem Vindo</h1>
                             <div class="w-full mt-4">
-                                <form class="form-horizontal w-3/4 mx-auto" method="POST" name="myform" id="myform" action="operador.php">
+                                <form class="form-horizontal w-3/4 mx-auto" method="POST" name="myform" id="myform" onsubmit="return validaForm(this);" action="operador.php">
                                     <div class="flex flex-col mt-4">
                                         <input id="user" type="text" class="flex-grow h-8 px-2 border rounded border-grey-400" name="user" value="" placeholder="Username">
                                     </div>
                                     <div class="flex flex-col mt-4">
-                                        <input id="password" type="password" class="flex-grow h-8 px-2 rounded border border-grey-400" name="password" required placeholder="Password">
+                                        <input id="password" type="password" class="flex-grow h-8 px-2 rounded border border-grey-400" name="password" placeholder="Password">
                                     </div>
                                     <div class="flex flex-col mt-8">
-                                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('logar')">
-                                            Login
-                                        </button>
+                                        <input type="submit" value="Login" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('logar')">
                                     </div>
                                     <input type="hidden" id="acao" name="acao" value="x">
 
