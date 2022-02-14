@@ -23,6 +23,7 @@
         <title>Gerência de Projetos</title>
         <link rel="stylesheet" href="assets/tailcss.css">
         <link rel="stylesheet" href="assets/style.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
@@ -37,6 +38,62 @@
                 with(document.myform){
                     acao.value = valor;
                 }
+            }
+
+            function validaForm(theForm){
+                if(theForm.acao.value=='cadastrar_proj'){
+                    if($('#titulo').val() == ""){
+                        alert("Insira o título do projeto");
+                        return false;
+                    }
+                    if($('#desc').val() == ""){
+                        alert("Insira a descrição do projeto");
+                        return false;
+                    }
+                    if($('#jus').val() == ""){
+                        alert("Insira a justificativa do projeto");
+                        return false;
+                    }
+                    if($('#git').val() == ""){
+                        alert("Insira o link do repositório GIT do projeto");
+                        return false;
+                    }
+                    if($('#trello').val() == ""){
+                        alert("Insira o link do TRELLO do projeto");
+                        return false;
+                    }
+                    if($('#inicio').val() == ""){
+                        alert("Insira a data inicial do projeto");
+                        return false;
+                    }
+                    if($('#prazo').val() == ""){
+                        alert("Insira a data prazo do projeto");
+                        return false;
+                    }
+                    if($('#tipo').val() == ""){
+                        alert("Insira o tipo do projeto");
+                        return false;
+                    }
+                    if($('#categoria').val() == ""){
+                        alert("Insira a categoria do projeto");
+                        return false;
+                    }
+                    if($('#prioridade').val() == ""){
+                        alert("Insira a prioridade do projeto");
+                        return false;
+                    }
+                    if($('#cliente').val() == ""){
+                        alert("Insira o cliente do projeto");
+                        return false;
+                    }
+                    if($('#receita').val() == ""){
+                        alert("Insira a receita do projeto");
+                        return false;
+                    }
+
+                    return true;
+                }
+                
             }
         </script>
     </head>
@@ -79,23 +136,13 @@
                             </a>
                 
                             <a class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-                                href="/ui-elements">
+                                href="graficos.php">
                                 <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path d="M10.281,1.781C5.75,1.781,2.062,5.469,2.062,10s3.688,8.219,8.219,8.219S18.5,14.531,18.5,10S14.812,1.781,10.281,1.781M10.714,2.659c3.712,0.216,6.691,3.197,6.907,6.908h-6.907V2.659z M10.281,17.354c-4.055,0-7.354-3.298-7.354-7.354c0-3.911,3.067-7.116,6.921-7.341V10c0,0.115,0.045,0.225,0.127,0.305l5.186,5.189C13.863,16.648,12.154,17.354,10.281,17.354M15.775,14.882l-4.449-4.449h6.295C17.522,12.135,16.842,13.684,15.775,14.882"></path>
                                 </svg>
                 
                                 <span class="mx-3">Gráficos</span>
-                            </a>
-                
-                            <a class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-                                href="/tables">
-                                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path d="M12.546,4.6h-5.2C4.398,4.6,2,7.022,2,10c0,2.978,2.398,5.4,5.346,5.4h5.2C15.552,15.4,18,12.978,18,10C18,7.022,15.552,4.6,12.546,4.6 M12.546,14.6h-5.2C4.838,14.6,2.8,12.536,2.8,10s2.038-4.6,4.546-4.6h5.2c2.522,0,4.654,2.106,4.654,4.6S15.068,14.6,12.546,14.6 M12.562,6.2C10.488,6.2,8.8,7.904,8.8,10c0,2.096,1.688,3.8,3.763,3.8c2.115,0,3.838-1.706,3.838-3.8C16.4,7.904,14.678,6.2,12.562,6.2 M12.562,13C10.93,13,9.6,11.654,9.6,10c0-1.654,1.33-3,2.962-3C14.21,7,15.6,8.374,15.6,10S14.208,13,12.562,13"></path>
-                                </svg>
-                
-                                <span class="mx-3">Projetos em andamento</span>
                             </a>
 
                             <?php if($permissao == "adm"){?>
@@ -139,9 +186,7 @@
                                 <div x-data="{ dropdownOpen: false }" class="relative">
                                     <button @click="dropdownOpen = ! dropdownOpen"
                                         class="relative block h-8 w-8 rounded-full overflow-hidden shadow focus:outline-none">
-                                        <img class="h-full w-full object-cover"
-                                            src="https://images.unsplash.com/photo-1528892952291-009c663ce843?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=296&amp;q=80"
-                                            alt="Your avatar">
+                                        <b><?php echo substr($nome, 0, 1)?></b>
                                     </button>
                 
                                     <div x-show="dropdownOpen" @click="dropdownOpen = false" class="fixed inset-0 h-full w-full z-10"
@@ -150,7 +195,7 @@
                                     <div x-show="dropdownOpen"
                                         class="absolute right-0 mt-2 w-48 bg-white rounded-md overflow-hidden shadow-xl z-10"
                                         style="display: none;">
-                                        <a href="#"
+                                        <a href="profile.php"
                                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Profile</a>
                                         <a href="index.php"
                                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-600 hover:text-white">Logout</a>
@@ -166,7 +211,7 @@
     
                     <div class="flex flex-col mt-8">
                         <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-                            <form class="form-horizontal w-3/4 mx-auto" method="POST" name="myform" id="myform" action="operador.php">
+                            <form class="form-horizontal w-3/4 mx-auto" method="POST" name="myform" id="myform" onsubmit="return validaForm(this);" action="operador.php">
                                 <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
                                     <div class="-mx-3 md:flex mb-6">
                                         <div class="md:w-full px-3">
@@ -287,9 +332,7 @@
                                         </div>
                                     </div>
                                     <div class="-mx-3 md:flex mb-6">
-                                        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('cadastrar_proj')">
-                                            Salvar
-                                        </button>
+                                        <input type="submit" value="Salvar" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('cadastrar_proj')">
                                     </div>
                                 </div>
                                 <input type="hidden" id="acao" name="acao" value="x">

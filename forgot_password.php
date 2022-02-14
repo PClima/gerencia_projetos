@@ -1,3 +1,13 @@
+<?php
+    session_start();
+    if(isset($_COOKIE['usuario'])){
+        setcookie('nome', null, -1);
+        setcookie('email', null, -1);
+        setcookie('usuario', null, -1);
+        setcookie('permissao', null, -1);
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
     <head>
@@ -19,25 +29,9 @@
             }
 
             function validaForm(theForm){
-                if(theForm.acao.value=='cadastrar'){
-                    if($('#nome').val() == ""){
-                        alert("Insira o seu nome para cadastro");
-                        return false;
-                    }
-                    if($('#email').val() == ""){
-                        alert("Insira o email para cadastro");
-                        return false;
-                    } 
+                if(theForm.acao.value=='forgot_password'){
                     if($('#user').val() == ""){
-                        alert("Insira o usuario para cadastro");
-                        return false;
-                    }
-                    if($('#password').val() == ""){
-                        alert("Insira a senha para cadastro");
-                        return false;
-                    }
-                    if($('#password').val() != $('#password1').val()){
-                        alert("As duas senhas devem ser iguais");
+                        alert("Insira o usuário");
                         return false;
                     }
 
@@ -56,39 +50,21 @@
                 <div class="flex rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 bg-white sm:mx-0" style="height: 700px">
                     <div class="flex flex-col w-full md:w-1/2 p-4">
                         <div class="flex flex-col flex-1 justify-center mb-8">
-                            <h1 class="text-4xl text-center font-thin">Cadastre-se</h1>
+                            <h1 class="text-4xl text-center font-thin">Esqueci minha senha</h1>
                             <div class="w-full mt-4">
                                 <form class="form-horizontal w-3/4 mx-auto" method="POST" name="myform" id="myform" onsubmit="return validaForm(this);" action="operador.php">
                                     <div class="flex flex-col mt-4">
-                                        <input id="nome" type="text" class="flex-grow h-8 px-2 border rounded border-grey-400" name="nome" value="" placeholder="Nome Completo">
-                                    </div>
-                                    <div class="flex flex-col mt-4">
-                                        <input id="email" type="email" class="flex-grow h-8 px-2 border rounded border-grey-400" name="email" value="" placeholder="Email">
-                                    </div>
-                                    <div class="flex flex-col mt-4">
                                         <input id="user" type="text" class="flex-grow h-8 px-2 border rounded border-grey-400" name="user" value="" placeholder="Username">
                                     </div>
-                                    <div class="flex flex-col mt-4">
-                                        <input id="password" type="password" class="flex-grow h-8 px-2 rounded border border-grey-400" name="password" placeholder="Password">
-                                    </div>
-                                    <div class="flex flex-col mt-4">
-                                        <input id="password1" type="password1" class="flex-grow h-8 px-2 rounded border border-grey-400" name="password1" placeholder="Confirm Password">
-                                    </div>
-                                    <div class="flex flex-col mt-4">
-                                        <select id="permissao" class="flex-grow h-8 px-2 border rounded border-grey-400" name="permissao">
-                                            <option value="normal">Normal</option>
-                                            <option value="adm">ADM</option>
-                                        </select>
-                                    </div>
                                     <div class="flex flex-col mt-8">
-                                        <input type="submit" value="Solicitar cadastro" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('cadastrar')">
+                                        <input type="submit" value="Enviar" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded" onclick="f_acao('forgot_password')">
                                     </div>
+                                    <input type="hidden" id="acao" name="acao" value="x">
                                     <div class="flex flex-col mt-8">
                                         <a href="index.php" class="bg-blue-500 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded text-center">
                                         Voltar
                                         </a>
                                     </div>
-                                    <input type="hidden" id="acao" name="acao" value="x">
                                 </form>
                             </div>
                         </div>

@@ -1,5 +1,6 @@
 <?php
     session_start();
+    
     include("../includes/mysql.php");
     $conexao = mysqli_connect($hostname, $username, $password, $database);
 
@@ -8,6 +9,36 @@
     }else{
         $acao = $_GET['acao'];
     }
+
+    function gerar_senha($tamanho, $maiusculas, $minusculas, $numeros, $simbolos){
+        $ma = "ABCDEFGHIJKLMNOPQRSTUVYXWZ"; // $ma contem as letras maiúsculas
+        $mi = "abcdefghijklmnopqrstuvyxwz"; // $mi contem as letras minusculas
+        $nu = "0123456789"; // $nu contem os números
+        $si = "!@#$%¨&*()_+="; // $si contem os símbolos
+      
+          if ($maiusculas){
+                // se $maiusculas for "true", a variável $ma é embaralhada e adicionada para a variável $senha
+                $senha .= str_shuffle($ma);
+          }
+    
+          if ($minusculas){
+              // se $minusculas for "true", a variável $mi é embaralhada e adicionada para a variável $senha
+              $senha .= str_shuffle($mi);
+          }
+      
+          if ($numeros){
+              // se $numeros for "true", a variável $nu é embaralhada e adicionada para a variável $senha
+              $senha .= str_shuffle($nu);
+          }
+      
+          if ($simbolos){
+              // se $simbolos for "true", a variável $si é embaralhada e adicionada para a variável $senha
+              $senha .= str_shuffle($si);
+          }
+      
+          // retorna a senha embaralhada com "str_shuffle" com o tamanho definido pela variável $tamanho
+          return substr(str_shuffle($senha),0,$tamanho);
+      }
     
 
     switch("$acao"){
@@ -49,6 +80,7 @@
                 setcookie("email", $result[2]);
                 setcookie("usuario", $result[3]);
                 setcookie("permissao", $result[5]);
+                setcookie("id", $result[0]);
 
                 print "<script>
                             window.location.href = \"dashboard.php\";
@@ -170,9 +202,9 @@
             $receita = $_POST['receita'];
             $cliente = $_POST['cliente'];
 
-            $sql = "UPDATE projetos SET tipo = '$tipo' AND descricao = '$descricao' AND categoria = '$categoria' AND prioridade = '$prioridade' AND justificativa = '$justificativa' AND fim = '$fim' AND receita = '$receita' AND cliente = '$cliente' WHERE id = '$id'";
-            print "$sql";
-            /*$query = mysqli_query($conexao, $sql);
+            $sql = "UPDATE projetos SET tipo = '$tipo', descricao = '$descricao', categoria = '$categoria', prioridade = '$prioridade', justificativa = '$justificativa', fim = '$fim', receita = '$receita', cliente = '$cliente' WHERE id = '$id'";
+            
+            $query = mysqli_query($conexao, $sql);
 
             if($query){
                 print "<script>alert('Projeto Alterado com sucesso!')
@@ -183,7 +215,76 @@
                 print "<script>alert('Erro ao alterar projeto!')
                             window.location.href = \"form_projeto.php?id=$id\";
                        </script>";
-            }*/
+            }
             break;
+
+        case "atualiza_user":
+            $senha = $_POST['senha'];
+            $id = $_POST['id_'];
+
+            $sql = "UPDATE usuarios SET senha = PASSWORD('$senha') WHERE id='$id'";
+            $query = mysqli_query($conexao, $sql);
+
+            if($query){
+                print "<script>alert('Usuario atualizado com sucesso!')
+                            window.location.href = \"dashboard.php\";
+                       </script>";
+            }else{
+                mysqli_query($conexao, "rollback;");
+                print "<script>alert('Erro ao atualizar usuario!')
+                            window.location.href = \"profile.php\";
+                       </script>";
+            }
+            break;
+        
+        case "forgot_password":
+            $user = $_POST['user'];
+
+            $sql = "SELECT * FROM usuarios WHERE usuario='$user'";
+            $query = mysqli_query($conexao, $sql);
+
+            if($query){
+                $result = mysqli_fetch_row($query);
+                $nova_senha = gerar_senha(8, 1, 5, 1, 1);
+
+                $sql = "UPDATE usuarios SET senha=PASSWORD('$nova_senha') WHERE usuario='$user'";
+                $query = mysqli_query($conexao, $sql);
+                
+                if($query){
+                    $to = $result[2];
+                    $subject = "Solicitação de alteração de senha - Gerencia de Projetos";
+                    $message = "Você solicitou a alteração de senha no sistema de gerencia de projetos.\nPara acesso no sistema novamente, utilize a senha: $nova_senha";
+                    $headers = "From: cordeirolima.pedro@gmail.com\r\n";
+                    
+                    if (mail($to, $subject, $message, $headers)) {
+                        print "<script>alert('Senha alterada com sucesso!')
+                            window.location.href = \"index.php\";
+                        </script>";
+                     } else {
+                        mysqli_query($conexao, "rollback;");
+                        print "<script>alert('Erro ao atualizar senha!')
+                                window.location.href = \"index.php\";
+                        </script>";
+                     }
+                }else{
+                    mysqli_query($conexao, "rollback;");
+                    print "<script>alert('Erro ao atualizar senha!')
+                            window.location.href = \"index.php\";
+                       </script>";
+                }
+                
+
+                
+                
+            }else{
+                print "<script>alert('Usuario não encontrado!')
+                            window.location.href = \"index.php\";
+                       </script>";
+            }
+
+            break;
+
+
+        
     }
 ?>
